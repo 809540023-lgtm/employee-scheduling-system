@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Button } from 'A/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -30,12 +30,12 @@ interface CalendarViewProps {
   isReadOnly?: boolean;
 }
 
-// 時間段選項
+// æéæ®µé¸é 
 const TIME_RANGES = [
-  { value: 'all', label: '全部時段' },
-  { value: 'morning', label: '早上 (06:00-09:00)' },
-  { value: 'noon', label: '中午 (10:00-13:00)' },
-  { value: 'afternoon', label: '下午 (13:00-18:00)' },
+  { value: 'all', label: 'å¨é¨ææ®µ' },
+  { value: 'morning', label: 'æ©ä¸ (06:00-09:00)' },
+  { value: 'noon', label: 'ä¸­å (10:00-13:00)' },
+  { value: 'afternoon', label: 'ä¸å (13:00-18:00)' },
 ];
 
 export function CalendarView({
@@ -51,15 +51,15 @@ export function CalendarView({
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date('2025-04-01'), { weekStartsOn: 1 }));
   const [timeFilter, setTimeFilter] = useState('all');
 
-  // 取得本週日期（週一到週五）
+  // åå¾æ¬é±æ¥æï¼é±ä¸å°é±äºï¼
   const weekDates = useMemo(() => {
     return Array.from({ length: 5 }, (_, i) => addDays(currentWeekStart, i));
   }, [currentWeekStart]);
 
-  // 切換週次
+  // åæé±æ¬¡
   const goToPreviousWeek = () => {
     const newStart = addDays(currentWeekStart, -7);
-    // 限制不能早於 4/1
+    // éå¶ä¸è½æ©æ¼ 4/1
     if (newStart >= new Date('2025-04-01')) {
       setCurrentWeekStart(newStart);
     }
@@ -67,13 +67,13 @@ export function CalendarView({
 
   const goToNextWeek = () => {
     const newStart = addDays(currentWeekStart, 7);
-    // 限制不能晚於 6/30
+    // éå¶ä¸è½ææ¼ 6/30
     if (newStart <= new Date('2025-06-30')) {
       setCurrentWeekStart(newStart);
     }
   };
 
-  // 取得某天的時段
+  // åå¾æå¤©çææ®µ
   const getDayTimeSlots = (date: Date): TimeSlot[] => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return timeSlots
@@ -81,7 +81,7 @@ export function CalendarView({
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
   };
 
-  // 過濾時段
+  // éæ¿¾ææ®µ
   const filterTimeSlots = (slots: TimeSlot[]): TimeSlot[] => {
     if (timeFilter === 'all') return slots;
     
@@ -99,41 +99,41 @@ export function CalendarView({
     });
   };
 
-  // 處理報名/取消
+  // èçå ±å/åæ¶
   const handleToggleAvailability = (slot: TimeSlot) => {
     if (isReadOnly) return;
 
     const hasSignedUp = hasAvailability(currentUser.id, slot.id);
     
     if (hasSignedUp) {
-      // 取消報名
+      // åæ¶å ±å
       const existing = availabilities.find(
         a => a.employeeId === currentUser.id && a.timeSlotId === slot.id
       );
       if (existing) {
         onRemoveAvailability(existing.id);
-        toast.success('已取消報名');
+        toast.success('å·²åæ¶å ±å');
       }
     } else {
-      // 檢查是否額滿
+      // æª¢æ¥æ¯å¦é¡æ»¿
       const count = getAvailabilityCount(slot.id);
       if (count >= slot.requiredStaff) {
-        toast.error('該時段已額滿');
+        toast.error('è©²ææ®µå·²é¡æ»¿');
         return;
       }
       
-      // 報名
+      // å ±å
       onAddAvailability({
         employeeId: currentUser.id,
         timeSlotId: slot.id,
         date: slot.date,
         status: 'available',
       });
-      toast.success('報名成功！');
+      toast.success('å ±åæåï¼');
     }
   };
 
-  // 取得時段狀態
+  // åå¾ææ®µçæ
   const getSlotStatus = (slot: TimeSlot) => {
     const count = getAvailabilityCount(slot.id);
     const hasSignedUp = hasAvailability(currentUser.id, slot.id);
@@ -147,7 +147,7 @@ export function CalendarView({
     };
   };
 
-  // 取得時段顏色
+  // åå¾ææ®µé¡è²
   const getSlotColor = (slot: TimeSlot) => {
     switch (slot.startTime) {
       case '06:00':
@@ -161,12 +161,12 @@ export function CalendarView({
     }
   };
 
-  // 檢查是否為今天
+  // æª¢æ¥æ¯å¦çºä»å¤©
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
     <div className="space-y-4">
-      {/* 週次導航 */}
+      {/* é±æ¬¡å°èª */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-lg border">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={goToPreviousWeek}>
@@ -199,12 +199,12 @@ export function CalendarView({
         </Select>
       </div>
 
-      {/* 日曆網格 */}
+      {/* æ¥æç¶²æ ¼ */}
       <div className="bg-white rounded-lg border overflow-hidden">
-        {/* 表頭 */}
+        {/* è¡¨é ­ */}
         <div className="grid grid-cols-6 border-b">
           <div className="p-3 bg-slate-50 border-r font-medium text-slate-500 text-sm">
-            時間
+            æé
           </div>
           {weekDates.map((date, index) => (
             <div 
@@ -223,9 +223,9 @@ export function CalendarView({
           ))}
         </div>
 
-        {/* 時段內容 */}
+        {/* ææ®µå§å®¹ */}
         <div className="grid grid-cols-6">
-          {/* 時間標籤欄 */}
+          {/* æéæ¨ç±¤æ¬ */}
           <div className="border-r bg-slate-50">
             {['06:00', '10:00', '13:00'].map((time) => (
               <div 
@@ -243,7 +243,7 @@ export function CalendarView({
             ))}
           </div>
 
-          {/* 每天的時段 */}
+          {/* æ¯å¤©çææ®µ */}
           {weekDates.map((date, dayIndex) => {
             const daySlots = filterTimeSlots(getDayTimeSlots(date));
             
@@ -305,11 +305,11 @@ export function CalendarView({
                               </span>
                             </div>
                             {!isReadOnly && !status.hasSignedUp && !status.isFull && (
-                              <span className="text-xs opacity-70">點擊報名</span>
+                              <span className="text-xs opacity-70">é»æå ±å</span>
                             )}
                           </div>
                           
-                          {/* 進度條 */}
+                          {/* é²åº¦æ¢ */}
                           <div className="h-1 bg-white/50 rounded-full overflow-hidden">
                             <div 
                               className={`h-full transition-all ${
@@ -329,24 +329,25 @@ export function CalendarView({
         </div>
       </div>
 
-      {/* 圖例 */}
+      {/* åä¾ */}
       <div className="flex flex-wrap gap-4 text-sm">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-orange-100 border border-orange-300" />
-          <span className="text-slate-600">早班 (06:00-09:00)</span>
+          <span className="text-slate-600">æ©ç­ (06:00-09:00)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-blue-100 border border-blue-300" />
-          <span className="text-slate-600">午班 (10:00-13:00)</span>
+          <span className="text-slate-600">åç­ (10:00-13:00)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-green-100 border border-green-300" />
-          <span className="text-slate-600">下午班 (13:00-18:00)</span>
+          <span className="text-slate-600">ä¸åç­ (13:00-18:00)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-green-50 border-2 border-green-500" />
-          <span className="text-slate-600">已報名</span>
+          <span className="text-slate-600">å·²å ±å</span>
         </div>
       </div>
     </div>
-  8>
+  );
+}
